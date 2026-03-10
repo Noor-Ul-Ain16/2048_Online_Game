@@ -94,7 +94,7 @@ def home():
     grid = [[0, 0, 0, 0] for _ in range(4)]
     add_new_tile(grid)
     add_new_tile(grid)
-    return render_template("index2.html")
+    return render_template("index.html")
 
 @app.route("/board")
 def board():
@@ -138,3 +138,4 @@ if __name__ == "__main__":
     add_new_tile(grid)
     add_new_tile(grid)
     app.run(host="0.0.0.0", port=5000, debug=True)
+
