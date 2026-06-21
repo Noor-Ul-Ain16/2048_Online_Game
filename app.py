@@ -1,14 +1,11 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 import random
 
 app = Flask(__name__)
-
-# Global variables
-score = 0
-grid = [[0, 0, 0, 0] for _ in range(4)]
+app.secret_key = "replace_this_with_a_secret_string_for_vercel"
 
 # ------------------------------
-# Game Functions
+# Game Helper Functions
 # ------------------------------
 
 def transpose(grid):
@@ -29,44 +26,49 @@ def compress(row):
     return new
 
 def merge(row):
-    global score
+    # Returns (merged_row, score_gained)
+    gained_score = 0
     for i in range(3):
         if row[i] == row[i+1] and row[i] != 0:
             row[i] *= 2
-            score += row[i]
+            gained_score += row[i]
             row[i+1] = 0
-    return row
+    return row, gained_score
 
 def move_left(grid):
-    new = []
+    new_grid = []
+    total_gained = 0
     for row in grid:
         row = compress(row)
-        row = merge(row)
+        row, gained = merge(row)
+        total_gained += gained
         row = compress(row)
-        new.append(row)
-    return new
+        new_grid.append(row)
+    return new_grid, total_gained
 
 def move_right(grid):
-    new = []
+    new_grid = []
+    total_gained = 0
     for row in grid:
         row = row[::-1]
         row = compress(row)
-        row = merge(row)
+        row, gained = merge(row)
+        total_gained += gained
         row = compress(row)
-        new.append(row[::-1])
-    return new
+        new_grid.append(row[::-1])
+    return new_grid, total_gained
 
 def move_up(grid):
     grid = transpose(grid)
-    grid = move_left(grid)
+    grid, gained = move_left(grid)
     grid = transpose(grid)
-    return grid
+    return grid, gained
 
 def move_down(grid):
     grid = transpose(grid)
-    grid = move_right(grid)
+    grid, gained = move_right(grid)
     grid = transpose(grid)
-    return grid
+    return grid, gained
 
 def game_over(grid):
     for row in grid:
@@ -83,40 +85,53 @@ def game_over(grid):
     return True
 
 # ------------------------------
-# Flask Routes
+# Flask Routes (Stateless Sessions)
 # ------------------------------
 
 @app.route("/")
 def home():
-    global grid, score
-    # Reset the game automatically on page load
-    score = 0
+    # Initialize the board in session if it doesn't exist
+    session["score"] = 0
     grid = [[0, 0, 0, 0] for _ in range(4)]
-    add_new_tile(grid)
-    add_new_tile(grid)
+    grid = add_new_tile(grid)
+    grid = add_new_tile(grid)
+    session["grid"] = grid
     return render_template("index.html")
 
 @app.route("/board")
 def board():
-    return jsonify({"board": grid, "score": score})
+    if "grid" not in session:
+        return new_game()
+    return jsonify({"board": session["grid"], "score": session["score"]})
 
 @app.route("/move", methods=["POST"])
 def move():
-    global grid
+    if "grid" not in session:
+        return jsonify({"error": "No active session"}), 400
+
+    grid = session["grid"]
+    score = session["score"]
+    
     data = request.get_json()
     direction = data["direction"]
 
+    gained = 0
     if direction == "left":
-        grid = move_left(grid)
+        grid, gained = move_left(grid)
     elif direction == "right":
-        grid = move_right(grid)
+        grid, gained = move_right(grid)
     elif direction == "up":
-        grid = move_up(grid)
+        grid, gained = move_up(grid)
     elif direction == "down":
-        grid = move_down(grid)
+        grid, gained = move_down(grid)
 
+    score += gained
     grid = add_new_tile(grid)
     over = game_over(grid)
+
+    # Save state back to cookie session
+    session["grid"] = grid
+    session["score"] = score
 
     return jsonify({
         "board": grid,
@@ -126,16 +141,12 @@ def move():
 
 @app.route("/newgame", methods=["POST"])
 def new_game():
-    global grid, score
-    score = 0
+    session["score"] = 0
     grid = [[0, 0, 0, 0] for _ in range(4)]
-    add_new_tile(grid)
-    add_new_tile(grid)
-    return jsonify({"board": grid, "score": score})
+    grid = add_new_tile(grid)
+    grid = add_new_tile(grid)
+    session["grid"] = grid
+    return jsonify({"board": grid, "score": session["score"]})
 
 if __name__ == "__main__":
-    # Initial two tiles
-    add_new_tile(grid)
-    add_new_tile(grid)
     app.run(host="0.0.0.0", port=5000, debug=True)
-
