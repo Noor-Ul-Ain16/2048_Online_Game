@@ -3,7 +3,7 @@ import random
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY","i_dont_care_about_my_secret_key")
 
 # ------------------------------
 # Game Helper Functions
