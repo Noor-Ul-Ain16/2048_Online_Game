@@ -1,62 +1,58 @@
-body{
-    margin:0;
-    padding:20px 10px;
-    text-align:center;
-    font-family:Arial, sans-serif;
-    background:#2e003e;
-    color:white;
-    min-height:100vh;
-    box-sizing:border-box;
+body {
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background: #2e003e;
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden; /* Stops mobile bouncing */
 }
 
-h1{
-    margin-bottom:10px;
+h1 {
+    margin: 0 0 5px 0;
+    font-size: max(24px, 4vh);
 }
 
-h2{
-    margin-bottom:20px;
+h2 {
+    margin: 0 0 15px 0;
+    font-size: max(18px, 2.5vh);
 }
 
 /* ================= BOARD ================= */
-
-#board{
-    width:min(92vw, 420px);
-    height:min(92vw, 420px);
-
-    margin:auto;
-
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-
-    gap:8px;
-    padding:8px;
-
-    background:#4b006e;
-    border-radius:12px;
-
-    box-sizing:border-box;
-
-    touch-action:none;
+#board {
+    width: 85vw;
+    height: 85vw;
+    max-width: 380px;
+    max-height: 380px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px;
+    background: #4b006e;
+    border-radius: 12px;
+    box-sizing: border-box;
+    touch-action: none; /* Prevents text selection/scrolling on swiping */
 }
 
 /* ================= TILE ================= */
-
-.tile{
-    width:100%;
-    aspect-ratio:1/1;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:clamp(18px, 5vw, 30px);
-    font-weight:bold;
-
-    border-radius:8px;
-
-    background:#a855f7;
-
-    transition:all 0.15s ease;
+.tile {
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(16px, 6vw, 28px);
+    font-weight: bold;
+    border-radius: 8px;
+    background: #a855f7;
+    transition: all 0.1s ease;
 }
 
 /* Tile Colors */
@@ -70,116 +66,61 @@ h2{
 .tile-256{background:#3b82f6;color:white;}
 .tile-512{background:#ec4899;color:white;}
 .tile-1024{background:#22c55e;color:white;}
-.tile-2048{background:#facc15;color:black;font-size:clamp(16px,4vw,26px);}
+.tile-2048{background:#facc15;color:black;font-size:clamp(14px,5vw,24px);}
 
 /* ================= BUTTONS ================= */
-
 #newGameBtn,
 #restartBtn,
 #continueBtn,
-#restartWinBtn{
-    margin-top:20px;
-    padding:12px 28px;
-
-    font-size:16px;
-
-    background:#9333ea;
-    color:white;
-
-    border:none;
-    border-radius:8px;
-
-    cursor:pointer;
-
-    transition:0.2s;
+#restartWinBtn {
+    margin-top: 15px;
+    padding: 10px 24px;
+    font-size: 16px;
+    background: #9333ea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 #newGameBtn:hover,
 #restartBtn:hover,
 #continueBtn:hover,
-#restartWinBtn:hover{
-    transform:scale(1.05);
-}
-
-#continueBtn{
-    margin-right:10px;
+#restartWinBtn:hover {
+    transform: scale(1.05);
 }
 
 /* ================= POPUPS ================= */
-
 #gameOverBox,
-#winBox{
-    position:fixed;
-    top:0;
-    left:0;
-
-    width:100%;
-    height:100%;
-
-    background:rgba(0,0,0,0.8);
-
-    display:none;
-    align-items:center;
-    justify-content:center;
-
-    z-index:1000;
+#winBox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 #gameOverContent,
-#winContent{
-    padding:40px;
-    border-radius:12px;
-    width:min(90vw,400px);
+#winContent {
+    padding: 30px;
+    border-radius: 12px;
+    width: 85vw;
+    max-width: 340px;
+    box-sizing: border-box;
 }
 
-#gameOverContent{
-    background:#4b006e;
-}
+#gameOverContent { background: #4b006e; }
+#winContent { background: #facc15; color: black; }
 
-#winContent{
-    background:#facc15;
-    color:black;
-}
-
-/* ================= MOBILE ================= */
-
-@media (max-width:480px){
-
-    body{
-        padding:15px 8px;
-    }
-
-    h1{
-        font-size:28px;
-    }
-
-    h2{
-        font-size:20px;
-    }
-
-    #board{
-        width:95vw;
-        height:95vw;
-
-        gap:2vw;
-        padding:2vw;
-    }
-
-    #newGameBtn,
-    #restartBtn,
-    #continueBtn,
-    #restartWinBtn{
-        width:100%;
-        max-width:260px;
-    }
-
-    #continueBtn{
-        margin-right:0;
-        margin-bottom:10px;
-    }
-
-    #gameOverContent,
-    #winContent{
-        padding:25px;
-    }
+/* Adjustments for tight smartphone displays */
+@media (max-height: 600px) {
+    h2 { margin-bottom: 5px; }
+    #board { width: 65vh; height: 65vh; }
+    #newGameBtn { margin-top: 5px; padding: 6px 16px; }
 }
