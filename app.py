@@ -1,8 +1,9 @@
 from flask import Flask, render_template, jsonify, request, session
 import random
+import os
 
 app = Flask(__name__)
-app.secret_key = "replace_this_with_a_secret_string_for_vercel"
+app.secret_key = os.getenv("SECRET_KEY")
 
 # ------------------------------
 # Game Helper Functions
